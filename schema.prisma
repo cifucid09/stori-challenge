@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model NewsletterSubmission {
+  id                  Int                   @id @default(autoincrement())
+  createdAt           DateTime              @default(now())
+  dedupe              String
+  uploadedFileName    String
+  published           Boolean               @default(false)
+  NewsletterRecipient NewsletterRecipient[]
+
+  @@map("newsletter_submission")
+}
+
+model Recipient {
+  email                  String                   @id @unique
+  createdAt              DateTime                 @default(now())
+  NewsletterUnsubscribed NewsletterUnsubscribed[]
+  NewsletterRecipient    NewsletterRecipient[]
+
+  @@map("recipient")
+}
+
+model NewsletterUnsubscribed {
+  recipientEmail String    @id @unique
+  createdAt      DateTime  @default(now())
+  recipient      Recipient @relation(fields: [recipientEmail], references: [email])
+
+  @@map("newsletter_unsubscribed")
+}
+
+model NewsletterRecipient {
+  newsletterSubmission   NewsletterSubmission @relation(fields: [newsletterSubmissionId], references: [id])
+  newsletterSubmissionId Int
+  recipient              Recipient            @relation(fields: [recipientEmail], references: [email])
+  recipientEmail         String
+  unsubscribedAt         DateTime             @default(now())
+  unsubscribed           Boolean              @default(false)
+
+  @@id([newsletterSubmissionId, recipientEmail])
+  @@map("newsletter_recipient")
+}
