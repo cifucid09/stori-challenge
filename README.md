@@ -4,6 +4,12 @@
 
 ## Development
 
+- Add .env file containing
+
+```text
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/stori?connect_timeout=300"
+```
+
 From the terminal:
 
 - Install dependencies
@@ -22,6 +28,12 @@ npm run docker
 
 ```sh
 npm run prisma-setup
+```
+
+- Add SMTP API Key to
+
+```text
+newsletterApp2/app/services/email.service.ts
 ```
 
 - Start the application
